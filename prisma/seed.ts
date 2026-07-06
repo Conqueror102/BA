@@ -9,14 +9,23 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   const email = process.env.SEED_SUPER_ADMIN_EMAIL ?? "super@bank.test";
   const password = process.env.SEED_SUPER_ADMIN_PASSWORD ?? "super1234";
+  const passwordHash = await bcrypt.hash(password, 10);
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    console.log(`Super admin already exists: ${email}`);
+    await prisma.user.update({
+      where: { email },
+      data: {
+        name: existing.name || "Super Admin",
+        passwordHash,
+        role: "SUPER_ADMIN",
+        status: "ACTIVE",
+      },
+    });
+    console.log(`Updated super admin credentials: ${email}`);
     return;
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.create({
     data: {
       name: "Super Admin",
@@ -28,7 +37,7 @@ async function main() {
 
   console.log("Seeded super admin:");
   console.log(`  email:    ${email}`);
-  console.log(`  password: ${password}`);
+  console.log("  password: set from SEED_SUPER_ADMIN_PASSWORD");
 }
 
 main()
