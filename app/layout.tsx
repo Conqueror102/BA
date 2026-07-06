@@ -7,8 +7,12 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: "Scotiabank",
   description: "Simulated bank & wallet management",
   icons: {
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
     siteName: "Scotiabank",
     images: [
       {
-        url: "/og-image.png",
+        url: new URL("/og-image.png", siteUrl),
         width: 1200,
         height: 630,
         alt: "Scotiabank digital banking",
@@ -37,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Scotiabank",
     description: "Secure digital banking for wallets, transfers, and account insights.",
-    images: ["/og-image.png"],
+    images: [new URL("/og-image.png", siteUrl)],
   },
 };
 
